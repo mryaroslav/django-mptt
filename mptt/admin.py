@@ -16,10 +16,12 @@ class MPTTChangeList(ChangeList):
     def get_query_set(self, request):
         qs = super(MPTTChangeList, self).get_query_set(request)
 
-        # always order by (tree_id, left)
-        tree_id = qs.model._mptt_meta.tree_id_attr
-        left = qs.model._mptt_meta.left_attr
-        return qs.order_by(tree_id, left)
+        ordering = self.get_ordering(request, qs)
+        if not ordering:
+            tree_id = qs.model._mptt_meta.tree_id_attr
+            left = qs.model._mptt_meta.left_attr
+            qs = qs.order_by(tree_id, left)
+        return qs
 
 
 class MPTTModelAdmin(ModelAdmin):
